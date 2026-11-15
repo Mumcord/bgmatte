@@ -1,0 +1,53 @@
+name: Bug report
+description: Something in bgmatte doesn't work as expected.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you see, and what did you expect instead? A wrong mask or a halo is easiest to judge with a picture; only share pictures you are happy to make public.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Ideally a few lines of code, or the example you ran.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: bgmatte version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: onnxruntime
+    attributes:
+      label: ONNX Runtime version
+      placeholder: "1.23.2"
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Linux
+        - Windows
+        - macOS
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: cpu
+    attributes:
+      label: CPU
+      description: Helpful for performance problems.
+      placeholder: "Intel Core i5-1135G7"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Build output, logs or bench output
+      description: Remove anything private first.
+      render: text

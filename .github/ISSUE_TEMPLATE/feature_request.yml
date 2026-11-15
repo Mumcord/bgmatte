@@ -1,0 +1,38 @@
+name: Feature request
+description: Suggest an idea or improvement for bgmatte.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        bgmatte covers person segmentation and background effects on frames you hand it.
+        Camera capture, encoding and user interfaces are out of scope.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: Describe the situation, not only the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Your idea
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Segmentation and models
+        - Edges and temporal smoothing
+        - Blur and image backgrounds
+        - Quality levels and performance
+        - Frame formats
+        - Build and packaging
+        - Other
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or workarounds you've considered
