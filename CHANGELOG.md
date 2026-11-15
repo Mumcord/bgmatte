@@ -4,7 +4,9 @@ All notable changes to this project are listed here. The format follows [Keep a 
 
 ## [Unreleased]
 
-First release (0.1.0).
+## [0.1.0] - 2026-11-15
+
+First release.
 
 ### Added
 
