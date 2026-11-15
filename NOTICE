@@ -1,0 +1,17 @@
+bgmatte
+Copyright (c) 2026 The bgmatte authors
+Licensed under MIT OR Apache-2.0 (see LICENSE-MIT and LICENSE-APACHE).
+
+This crate bundles the following third-party material:
+
+- models/selfie_segmenter_square.onnx and models/selfie_segmenter_landscape.onnx:
+  MediaPipe Selfie Segmenter (square 256x256 and landscape 256x144),
+  Copyright Google LLC, created by Tingbo Hou, Siargey Pisarchyk and Karthik Raveendran,
+  licensed under the Apache License, Version 2.0 (full text in LICENSE-APACHE).
+  Model card: https://storage.googleapis.com/mediapipe-assets/Model%20Card%20MediaPipe%20Selfie%20Segmentation.pdf
+  The files are the unchanged ONNX conversions published by the ONNX Community
+  (https://huggingface.co/onnx-community/mediapipe_selfie_segmentation and
+  https://huggingface.co/onnx-community/mediapipe_selfie_segmentation_landscape),
+  also under Apache-2.0. Origin, revisions and checksums: models/README.md.
+
+ONNX Runtime (MIT, Microsoft) is not bundled; applications provide it at run time.
