@@ -1,0 +1,44 @@
+[package]
+name = "bgmatte"
+description = "Realtime background blur and background replacement for camera pictures: person segmentation with ONNX Runtime, edge refinement and temporal smoothing, without allocation per frame"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.92"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Mumcord/bgmatte"
+documentation = "https://docs.rs/bgmatte"
+readme = "README.md"
+keywords = ["background", "blur", "segmentation", "camera", "video"]
+categories = ["multimedia::video", "multimedia::images", "computer-vision"]
+include = [
+    "/src",
+    "/models",
+    "/examples",
+    "/tests",
+    "/README.md",
+    "/CHANGELOG.md",
+    "/NOTICE",
+    "/ORIGIN.md",
+    "/LICENSE-MIT",
+    "/LICENSE-APACHE",
+]
+
+[dependencies]
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp"] }
+log = "0.4"
+# ONNX Runtime is loaded at run time from a library the application provides (see README).
+ort = { version = "=2.0.0-rc.15", default-features = false, features = ["std", "load-dynamic", "api-23"] }
+thiserror = "2"
+
+[package.metadata.docs.rs]
+all-features = true
+
+[lints.rust]
+missing_docs = "warn"
+unsafe_op_in_unsafe_fn = "warn"
+
+[lints.clippy]
+dbg_macro = "warn"
+todo = "warn"
+undocumented_unsafe_blocks = "warn"
+unwrap_used = "warn"
