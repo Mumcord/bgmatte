@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  # The release workflow runs these checks as its test suite.
+  workflow_call:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -D warnings
+  RUSTDOCFLAGS: -D warnings
+  CARGO_DENY_VERSION: 0.20.2
+
+jobs:
+  check:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Format
+        run: cargo fmt --all --check
+
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+      # The tests that run the real models need ONNX Runtime; the crate never downloads it.
+      - name: Fetch ONNX Runtime
+        shell: bash
+        run: |
+          library=$(.github/scripts/fetch-onnxruntime.sh "$RUNNER_TEMP/onnxruntime")
+          echo "ORT_DYLIB_PATH=$library" >> "$GITHUB_ENV"
+
+      - name: Tests (including the ONNX Runtime tests)
+        run: cargo test -- --include-ignored
+
+      - name: Documentation
+        run: cargo doc --no-deps
+
+      - name: Examples
+        run: cargo build --examples
+
+      - name: Package dry run
+        if: runner.os == 'Linux'
+        run: |
+          cargo package
+          # crates.io refuses packages over 10 MB; the bundled models make up most of it.
+          size=$(stat -c %s target/package/bgmatte-*.crate)
+          echo "Package size: $size bytes"
+          if (( size > 5 * 1024 * 1024 )); then
+            echo "::error::The package is $size bytes, more than the 5 MB this crate allows itself."
+            exit 1
+          fi
+
+  msrv:
+    name: Minimum Rust version (1.92)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+        with:
+          toolchain: "1.92"
+
+      - name: Build everything
+        run: cargo check --all-targets
+
+  deny:
+    name: Dependency checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+
+      - name: Restore cargo-deny
+        id: deny
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cargo/bin/cargo-deny
+          key: cargo-deny-${{ runner.os }}-${{ runner.arch }}-${{ env.CARGO_DENY_VERSION }}
+
+      - name: Install cargo-deny
+        if: steps.deny.outputs.cache-hit != 'true'
+        run: cargo install --locked cargo-deny --version "$CARGO_DENY_VERSION"
+
+      - name: Advisories, licences, bans and sources
+        run: cargo deny check
